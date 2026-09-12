@@ -25,7 +25,7 @@ export const OVERLAY_CONFIG: OverlayConfig = {
   WS_PORT: null,
   WS_ENDPOINT: "/",
   ALERT_BASE_DISPLAY_MS: 7000,
-  TTS_VOLUME: 0.8,
+  TTS_VOLUME: 0.9,
   TTS_RATE: 1.0,
   SOUND_VOLUME: 1.0,
   LOCK_TIMEOUT_MS: 15 * 1000,
