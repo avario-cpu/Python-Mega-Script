@@ -54,8 +54,8 @@ function Get-CmdkeySecret {
 
   $ok = [CredManager.NativeMethods]::CredRead($Target, $CRED_TYPE_GENERIC, 0, [ref]$credPtr)
   if (-not $ok) {
-    Write-ThrowContext
-    throw "No stored credential found for target '$Target'. Run cmdkey /generic:$Target /user:<user> /pass:`"<value>`" first."
+    Write-Error "No stored credential found for target '$Target'"
+    return $null
   }
 
   try {

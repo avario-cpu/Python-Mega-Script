@@ -26,6 +26,26 @@
 # Test-KofiWebhook resub -Message "message" ...
 # Test-KofiWebhook dono -Message "message" ...
 
+function Set-KofiSecret {
+  param(
+    [Parameter(Mandatory)]
+    [string]$Target
+  )
+
+  $secure = Read-Host "Value for $Target" -AsSecureString
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+
+  try {
+    cmdkey /generic:$Target /user:kofi /pass:$plain | Out-Null
+  } finally {
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    $plain = $null
+  }
+
+  Write-Host "Stored credential for '$Target'" -ForegroundColor Green
+}
+
 function Test-KofiWebhook {
   param(
     [Parameter(Position = 0)]
@@ -86,8 +106,9 @@ function Test-KofiWebhook {
   $VerificationToken = Get-CmdkeySecret -Target $TokenTarget
 
   if ([string]::IsNullOrWhiteSpace($WebhookUrl) -or [string]::IsNullOrWhiteSpace($VerificationToken)) {
-    throw "Test-KofiWebhook: failed to retrieve credentials for '$Env' " `
-      + "(target(s): $UrlTarget, $TokenTarget). Check cmdkey entries."
+    Write-Warning "Test-KofiWebhook: missing credentials for '$Env' (target(s): $UrlTarget, $TokenTarget)."
+    Write-Warning "Run Set-KofiSecret -Target <name> for each missing one."
+    throw "Test-KofiWebhook: credentials not found for '$Env'."
   }
 
   $payload = @{
@@ -129,4 +150,4 @@ function Test-KofiWebhook {
   $response
 }
 
-Export-ModuleMember -Function Test-KofiWebhook
+Export-ModuleMember -Function Test-KofiWebhook, Set-KofiSecret
