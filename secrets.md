@@ -5,12 +5,12 @@ On Windows, Stored via `cmdkey`, retrieved at runtime via `Get-CmdkeySecret`.
 
 ## Ko-fi
 
-| Target Name                           | Purpose                                                      |
-| ------------------------------------- | -----------------------------------                          |
-| `NoscopeKofiWebhookUrl`               | Streamer.bot webhook URL for Ko-fi, main twicth account      |
-| `NoscopeKofiVerificationToken`        | Ko-fi webhook verification token, main twicth account        |
-| `HardscopeKofiWebhookUrl`             | Streamer.bot webhook URL for Ko-fi, secondary twicth account |
-| `HardscopeKofiVerificationToken`      | Ko-fi webhook verification token, secondary twicth account   |
+Target Name                           | Purpose
+------------------------------------- | -----------------------------------
+`NoscopeKofiWebhookUrl`               | Streamer.bot webhook URL for Ko-fi, main twicth account
+`NoscopeKofiVerificationToken`        | Ko-fi webhook verification token, main twicth account
+`HardscopeKofiWebhookUrl`             | Streamer.bot webhook URL for Ko-fi, secondary twicth account
+`HardscopeKofiVerificationToken`      | Ko-fi webhook verification token, secondary twicth account
 
 ## Adding a new secret
 
