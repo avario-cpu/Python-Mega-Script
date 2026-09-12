@@ -15,13 +15,21 @@ Target Name                           | Purpose
 ## Adding a new secret
 
 ```powershell
-cmdkey /generic:<TargetName> /user:kofi /pass:"<value>"
+Set-CmdkeySecret -Target <TargetName> -User <username>
 ```
 
-Then add a row to the relevant table above.
+Prompts for the value via `Read-Host -AsSecureString` and stores it through
+`cmdkey`: this avoids the plaintext value landing in PSReadLine history!! Then,
+add a row to the relevant table above.
 
 ## Checking what's stored
 
 ```powershell
 cmdkey /list:<TargetName>
+```
+
+Confirms a credential exists but doesn't show the value. To read the actual stored value:
+
+```powershell
+Get-CmdkeySecret -Target <TargetName>
 ```

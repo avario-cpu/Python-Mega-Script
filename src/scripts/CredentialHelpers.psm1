@@ -34,13 +34,42 @@ namespace CredManager
 "@
 }
 
+function Set-CmdkeySecret {
+  <#
+    .SYNOPSIS
+        Prompts for a secret value and stores it via cmdkey (Windows Credential Manager, generic type).
+    .PARAMETER Target
+        The target name for the credential. Used to retrieve the secret later.
+    .PARAMETER User
+        The username field stored alongside the secret. Only used for display/organization purposes
+    .EXAMPLE
+        Set-CmdkeySecret -Target "NoscopeKofiWebhookUrl" -User "kofi"
+  #>
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Target,
+    [string]$User = "none-specified"
+  )
+
+  $secure = Read-Host "Value for $Target" -AsSecureString
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+
+  try {
+    cmdkey /generic:$Target /user:$User /pass:$plain | Out-Null
+  } finally {
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    $plain = $null
+  }
+
+  Write-Host "Stored credential for '$Target'" -ForegroundColor Green
+}
+
+
 function Get-CmdkeySecret {
   <#
     .SYNOPSIS
         Reads a secret value stored via cmdkey (Windows Credential Manager, generic type).
-    .PARAMETER Target
-        The target name used when the credential was stored, e.g. via:
-        cmdkey /generic:<Target> /user:<anything> /pass:"<value>"
     .EXAMPLE
         $token = Get-CmdkeySecret -Target "HardscopeKofiVerificationToken"
     #>
@@ -70,4 +99,4 @@ function Get-CmdkeySecret {
   }
 }
 
-Export-ModuleMember -Function Get-CmdkeySecret
+Export-ModuleMember -Function Get-CmdkeySecret, Set-CmdkeySecret

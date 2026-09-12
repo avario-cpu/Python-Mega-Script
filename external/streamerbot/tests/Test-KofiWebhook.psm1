@@ -28,22 +28,11 @@
 
 function Set-KofiSecret {
   param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory = $true)]
     [string]$Target
   )
 
-  $secure = Read-Host "Value for $Target" -AsSecureString
-  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
-
-  try {
-    cmdkey /generic:$Target /user:kofi /pass:$plain | Out-Null
-  } finally {
-    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
-    $plain = $null
-  }
-
-  Write-Host "Stored credential for '$Target'" -ForegroundColor Green
+  Set-CmdkeySecret -Target $Target -User kofi
 }
 
 function Test-KofiWebhook {
