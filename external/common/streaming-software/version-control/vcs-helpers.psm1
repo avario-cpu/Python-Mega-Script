@@ -139,29 +139,18 @@ function Assert-HelpersPaths {
   )
   foreach ($path in $helperPaths) {
     if (-not (Test-Path $path)) {
-      Write-Host "Required path not found for file: '$(Split-Path $path -Leaf)'" `
-        -ForegroundColor Red
+      Write-Warning "Required path not found: '$(Split-Path $path -Leaf)'" `
 
       if ($path -eq $RepoPath) {
-        Write-Host "Global:RepoPath is not set correctly" -ForegroundColor Red
-        Write-ThrowContext
-        throw "Required path not found: $path"
+        Write-Warning "Global:RepoPath is not set correctly"
       }
 
       if ($path -eq $PrettierPath) {
-        Write-Host "Prettier is not installed or not found at the expected path: $path" `
-          -ForegroundColor Yellow
-        $response = Read-Host "Continue without Prettier formatting? (y/N)"
-        if ($response -eq 'y') {
-          $script:PrettierPath = $null
-          continue
-        }
-        Write-Host "check $CommonVcsPaths" -ForegroundColor Red
-        Write-ThrowContext
-        throw "Required path not found: $path"
+        Write-Warning "Prettier is not installed or not found at the expected path: $path"
+        Write-Warning "check $CommonVcsPaths"
       }
 
-      Write-Host "check $CommonVcsPaths" -ForegroundColor Red
+      Write-Warning "check $CommonVcsPaths"
       Write-ThrowContext
       throw "Required path not found: $path"
     }
