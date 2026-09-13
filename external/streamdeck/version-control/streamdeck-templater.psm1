@@ -569,7 +569,7 @@ function Copy-StreamDeckMarkerFile {
   }
 
   $marker["vcs-flag"] = $newFlag
-  $marker | ConvertTo-Json | Set-Content $destPath -Encoding UTF8
+  Write-VcsFileLf -Path $destPath -Content ($marker | ConvertTo-Json)
   $truncatedFlag = $newFlag.Substring(0, 6) + "..."
   $flagChanged = ($existingFlag -ne $newFlag) -or ($isHome -and $ChildChanged)
 

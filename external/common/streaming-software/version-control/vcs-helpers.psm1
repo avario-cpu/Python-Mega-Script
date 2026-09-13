@@ -10,6 +10,15 @@ $script:VcsMaxLogSizeBytes = 2MB
 $script:VcsVerboseEnabled = $false
 $Script:LogSuffix = "-vcs-templater.log"
 
+function Write-VcsFileLf {
+  param(
+    [Parameter(Mandatory=$true)] [string]$Path,
+    [Parameter(Mandatory=$true)] [AllowEmptyString()] [string]$Content
+  )
+  $normalized = ($Content -replace "`r`n", "`n").TrimEnd("`n") + "`n"
+  [System.IO.File]::WriteAllText($Path, $normalized, [System.Text.UTF8Encoding]::new($false))
+}
+
 function Get-VcsMarkerFile {
   param([Parameter(Mandatory=$true)] [string]$DirectoryPath)
   return Get-ChildItem $DirectoryPath -File -Filter "*-marker.json" | Select-Object -First 1
@@ -556,7 +565,7 @@ function ConvertTo-VcsTemplateFile {
   }
 
   if ($needsWrite) {
-    $content | Set-Content $vcsOutFilePath -Encoding UTF8
+    Write-VcsFileLf -Path $vcsOutFilePath -Content $content
     Write-VcsMessage -AsVerbose -Message "Template saved: $vcsOutFilePath"
   } else {
     Write-VcsMessage -AsVerbose -Message "Unchanged content: $vcsOutFilePath"
@@ -648,6 +657,7 @@ $FunctionsToExport = @(
   "Test-DanglingVcsSymlink"
   "Write-VcsLogSeparator"
   "Write-VcsMessage"
+  "Write-VcsFileLf"
 )
 
 Assert-HelpersPaths
