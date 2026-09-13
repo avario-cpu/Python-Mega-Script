@@ -541,9 +541,30 @@ function Copy-StreamDeckMarkerFile {
       $diffLines = Compare-Object (Get-Content $oldSnapshotPath) (Get-Content $manifestTemplatePath)
       if ($diffLines) {
         "$($diffLines.Count) line(s) differ from previous snapshot"
+
       } else {
-        "content is BYTE-IDENTICAL to previous snapshot — flag change is spurious, " `
-          + "look at Get-FileContentHash / encoding, not content generation"
+        $oldText = [System.IO.File]::ReadAllText($oldSnapshotPath)
+        $newText = [System.IO.File]::ReadAllText($manifestTemplatePath)
+        $oldEol = if ($oldText.Contains("`r`n")) {
+          "crlf"
+        } else {
+          "lf"
+        }
+        $newEol = if ($newText.Contains("`r`n")) {
+          "crlf"
+        } else {
+          "lf"
+        }
+
+        $bomBytes = @(0xEF, 0xBB, 0xBF)
+        $oldFirst3 = [System.IO.File]::ReadAllBytes($oldSnapshotPath)[0..2]
+        $newFirst3 = [System.IO.File]::ReadAllBytes($manifestTemplatePath)[0..2]
+        $oldBom = -not (Compare-Object $bomBytes $oldFirst3)
+        $newBom = -not (Compare-Object $bomBytes $newFirst3)
+
+        "content is LINE-IDENTICAL to previous snapshot — flag change is spurious " `
+          + "(eol: $oldEol -> $newEol, bom: $oldBom -> $newBom, " `
+          + "bytes: $($oldText.Length) -> $($newText.Length))"
       }
     } else {
       "no previous snapshot on disk to compare against"
